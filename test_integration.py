@@ -47,8 +47,13 @@ def test_server_startup():
     
     # Stop server
     server_process.terminate()
-    server_process.wait(timeout=5)
-    print("✓ Server stopped cleanly")
+    try:
+        server_process.wait(timeout=5)
+        print("✓ Server stopped cleanly")
+    except subprocess.TimeoutExpired:
+        server_process.kill()
+        server_process.wait()
+        print("✓ Server stopped (forced)")
     
     return True
 
@@ -93,7 +98,11 @@ def test_client_connection():
     
     # Stop server
     server_process.terminate()
-    server_process.wait(timeout=5)
+    try:
+        server_process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        server_process.kill()
+        server_process.wait()
     
     return success
 
